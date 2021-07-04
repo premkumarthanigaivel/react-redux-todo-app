@@ -11,3 +11,8 @@ Project bootstrapped with CRA template.
 #### Dependencies
 
 Install dependencies using  `yarn install`
+
+##Pending
+
+Redux store
+Firebase integration
