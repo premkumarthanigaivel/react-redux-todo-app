@@ -12,7 +12,6 @@ Project bootstrapped with CRA template.
 
 Install dependencies using  `yarn install`
 
-##Pending
+#### Pending
 
-Redux store
 Firebase integration
