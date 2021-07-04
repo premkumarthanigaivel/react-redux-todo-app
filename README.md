@@ -1,6 +1,6 @@
 ### ABOUT APP
 
-A simple to-do app built with React-Redux and Mock Node JS server
+A simple to-do app built with React-Redux
 
 #### SETUP
 Project bootstrapped with CRA template.
@@ -12,7 +12,6 @@ Project bootstrapped with CRA template.
 
 Install dependencies using  `yarn install`
 
-##Pending
+#### Pending
 
-Redux store
 Firebase integration
