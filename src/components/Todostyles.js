@@ -16,7 +16,7 @@ body{
 // Centers any child component both vertically & horizontally, prefer to keep one child component
 export const PageContainer = styled(Box)`
   background-color: #fff;
-  height: 100vh;
+  height: 90vh;
   width: 100vw;
   display: flex;
   justify-content: center;

@@ -9,7 +9,7 @@ const TODOApplication = () => {
       <PageContainer>
         <TODO />
       </PageContainer>
-      <PageFooter>🂡</PageFooter>
+      <PageFooter>Authored by, Prem Kumar</PageFooter>
     </>
   )
 }
