@@ -1,6 +1,6 @@
 ### ABOUT APP
 
-A simple to-do app built with React-Redux and Mock Node JS server
+A simple to-do app built with React-Redux
 
 #### SETUP
 Project bootstrapped with CRA template.
