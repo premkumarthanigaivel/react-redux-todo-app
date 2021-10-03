@@ -4,6 +4,13 @@
 /node_modules
 /.pnp
 .pnp.js
+yarn.lock
+package-lock.json
+.eslintrc
+
+#private
+firebase.js
+
 
 # testing
 /coverage

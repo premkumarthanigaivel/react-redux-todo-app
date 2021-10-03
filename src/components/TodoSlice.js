@@ -1,15 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
-import uuid from 'uuid-random'
 
-//init state of app
+let initialState = []
 
-const initialState = [
-  {
-    id: 'default-12345',
-    value: 'Redux - Wake up at 5:00 AM',
-    checked: false
-  }
-]
 
 //slice
 
@@ -17,11 +9,11 @@ export const TodoSlice = createSlice({
   name: 'todo',
   initialState,
   reducers: {
+    initTodo: (state, action) => [...state, ...action.payload],
     addTodo: (state, action) => [
       ...state,
-      { id: `${uuid()}`, value: action.payload.value, checked: false }
+      { id: action.payload.id, value: action.payload.value, checked: false }
     ],
-
     deleteTodo: (state, action) =>
       state.slice().filter((item) => item.id != action.payload.todoId),
     completeTodo: (state, action) =>
@@ -35,7 +27,7 @@ export const TodoSlice = createSlice({
 
 //event dispatchers - for further use in useDispatch
 
-export const { addTodo, deleteTodo, completeTodo } = TodoSlice.actions
+export const { initTodo, addTodo, deleteTodo, completeTodo } = TodoSlice.actions
 
 //selectors - for further use in useSelector
 
