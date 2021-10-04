@@ -13,7 +13,7 @@ import {
   deleteTodo,
   selectTodos
 } from './TodoSlice'
-import firebase from 'firebase'
+import firebase from '../app/firebase'
 import uuid from 'uuid-random'
 
 const ENTER_KEY = 'Enter'
@@ -24,102 +24,88 @@ export const TODO = () => {
   const firstRenderRef = useRef(false)
   const [newTodo, setNewTodo] = useState('')
 
+  const getFirebasePathRef = (path) => firebase.database().ref(path)
+  const printError = (error) => console.error(`Error >>`, error)
+
   //add todo
   const handleAddTodo = (event) => {
+    console.log('>>  ADD TODO')
+
     if (event.nativeEvent.key === ENTER_KEY) {
-      const todoItemsRef = firebase.database().ref('todoitems')
-      let newTodoRef = todoItemsRef.push()
-      let newTodoId = uuid()
       let todoItem = {
-        id: newTodoId,
+        id: uuid(),
         value: event.target.value,
         checked: false
       }
-      newTodoRef
-        .set(todoItem)
-        .then(function () {
-          console.log('Item successfully added to firebase')
+
+      getFirebasePathRef('todoitems')
+        .push(todoItem)
+        .then(() => {
+          console.log('Add succeeded.')
           dispatch(addTodo(todoItem))
           setNewTodo('')
         })
-        .catch(function (error) {
-          console.log('Item failed to add into firebase')
-        })
+        .catch(err =>  printError(err))
     }
   }
 
   //delete todo
 
   const handleDeleteTodo = (todoId) => {
-    console.log('To be deleted Todo Item: ', todoId)
-    const todoItemsRef = firebase.database().ref('todoitems')
-    let FBTodoId = ''
+    console.log('>>  DELETE TODO')
 
-    todoItemsRef
+    let fireBaseTodoId = ''
+
+    getFirebasePathRef('todoitems')
       .orderByChild('id')
       .equalTo(todoId)
       .on('child_added', function (snapshot) {
-        console.log('Firebase key: ', snapshot.key)
-        FBTodoId = snapshot.key
+        fireBaseTodoId = snapshot.key
       })
-    if (FBTodoId) {
-      let deleteChildRef = firebase.database().ref(`todoitems/${FBTodoId}`)
-      deleteChildRef
+    if (fireBaseTodoId) {
+      getFirebasePathRef(`todoitems/${fireBaseTodoId}`)
         .remove()
         .then(function () {
           console.log('Remove succeeded.')
-          // alert('Remove succeeded.')
           dispatch(deleteTodo({ todoId }))
         })
-        .catch(function (error) {
-          console.log('Remove failed: ' + error.message)
-        })
+        .catch(err => printError(err))
     }
   }
 
   // complete todo
 
   const handleCompleteTodo = (todoItem) => {
-    const todoItemsRef = firebase.database().ref('todoitems')
-    let fireBaseTodoId = ''
+    console.log('>>  COMPLETE TODO')
 
-    todoItemsRef
+    let fireBaseTodoId = ''
+    getFirebasePathRef('todoitems')
       .orderByChild('id')
       .equalTo(todoItem.id)
       .on('child_added', function (snapshot) {
-        console.log('Firebase key: ', snapshot.key)
         fireBaseTodoId = snapshot.key
       })
 
     if (fireBaseTodoId) {
-      let completeChildRef = firebase
-        .database()
-        .ref(`todoitems/${fireBaseTodoId}`)
-
-      completeChildRef
+      getFirebasePathRef(`todoitems/${fireBaseTodoId}`)
         .set({
           checked: !todoItem.checked,
           id: todoItem.id,
           value: todoItem.value
         })
         .then(function () {
-          alert('Complete succeeded')
+          console.log('Complete succeeded.')
           dispatch(completeTodo({ todoId: todoItem.id }))
         })
-        .catch(function (error) {
-          console.log('Synchronization failed')
-        })
+        .catch(err => printError(err))
     }
   }
 
-  //init state of app from firebase
-  useEffect(() => {
-    console.log('>> FIRST RENDER')
-    const todoItemsRef = firebase.database().ref('todoitems')
-    todoItemsRef.on('value', (snapshot) => {
+  const initTodoList = () => {
+    console.log('***  TODO INIT ***')
+    getFirebasePathRef('todoitems').on('value', (snapshot) => {
       let todoItems = snapshot.val()
       if (firstRenderRef.current === false) {
-        console.log('***  TODO INIT ***')
         for (let item in todoItems) {
           let tempState = []
           tempState.push({
@@ -129,9 +115,15 @@ export const TODO = () => {
           })
           dispatch(initTodo(tempState))
         }
+        firstRenderRef.current = true
       }
-      firstRenderRef.current = true
     })
+  }
+
+  //init state of app from firebase
+  useEffect(() => {
+    console.log('>> FIRST RENDER')
+    initTodoList()
   }, [])
 
   const todoListItems = todoTasks.map((item) => (
